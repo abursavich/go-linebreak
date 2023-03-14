@@ -1,4 +1,4 @@
-// Package linebreak wraps text at a given width
+// Package linebreak wraps text at a given width.
 package linebreak
 
 import "strings"
@@ -7,7 +7,7 @@ import "strings"
 // https://en.wikipedia.org/wiki/SMAWK_algorithm
 // A. Aggarwal, T. Tokuyama. Consecutive interval query and dynamic programming on intervals. Discrete Applied Mathematics 85, 1998.
 
-// Wrap formats text at the given width in linear time
+// Wrap formats text at the given width in linear time.
 func Wrap(text string, width, maxwidth int) string {
 	words := strings.Fields(text)
 	count := len(words)
@@ -133,7 +133,7 @@ func Wrap(text string, width, maxwidth int) string {
 	return strings.Join(lines, "\n")
 }
 
-// Greedy formats text at the given width greedily
+// Greedy formats text at the given width greedily.
 func Greedy(text string, width, maxwidth int) string {
 	words := strings.Fields(text)
 
