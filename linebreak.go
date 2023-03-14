@@ -11,9 +11,9 @@ import "strings"
 func Wrap(text string, width, maxwidth int) string {
 	words := strings.Fields(text)
 	count := len(words)
-	offsets := []int{0}
+	offsets := make([]int, count+1)
 	for i, w := range words {
-		offsets = append(offsets, offsets[i]+len(w))
+		offsets[i+1] = offsets[i] + len(w)
 	}
 
 	minima := make([]int64, count+1)
