@@ -8,7 +8,7 @@ import "strings"
 // A. Aggarwal, T. Tokuyama. Consecutive interval query and dynamic programming on intervals. Discrete Applied Mathematics 85, 1998.
 
 // Wrap formats text at the given width in linear time.
-func Wrap(text string, width, maxwidth int) string {
+func Wrap(text string, width, maxWidth int) string {
 	words := strings.Fields(text)
 	count := len(words)
 	if count == 0 {
@@ -28,7 +28,7 @@ func Wrap(text string, width, maxwidth int) string {
 	// closes over offsets, minima
 	cost := func(i, j int) int64 {
 		w := offsets[j] - offsets[i] + j - i - 1
-		if w > maxwidth {
+		if w > maxWidth {
 			return 10000000000 * int64(w-width)
 		}
 		d := abs(width - w)
@@ -141,7 +141,7 @@ func Wrap(text string, width, maxwidth int) string {
 }
 
 // Greedy formats text at the given width greedily.
-func Greedy(text string, width, maxwidth int) string {
+func Greedy(text string, width, maxWidth int) string {
 	fields := strings.Fields(text)
 	count := len(fields)
 	if count == 0 {
@@ -160,7 +160,7 @@ func Greedy(text string, width, maxwidth int) string {
 		switch {
 		// Append the existing line if adding the field will go
 		// over the max width OR farther from the target width.
-		case nextWidth > maxwidth || abs(width-lineWidth) < abs(width-nextWidth):
+		case nextWidth > maxWidth || abs(width-lineWidth) < abs(width-nextWidth):
 			appendLine(&b, fields[i:k])
 			i = k
 			lineWidth = fieldWidth
