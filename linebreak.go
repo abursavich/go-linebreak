@@ -96,7 +96,7 @@ func Wrap(text string, width, maxWidth int) string {
 	for {
 		r := min(n, 1<<uint(i+1))
 		edge := (1 << uint(i)) + offset
-		r1 = genrange(r1, 0+offset, edge)
+		r1 = genrange(r1, offset, edge)
 		r2 = genrange(r2, edge, r+offset)
 		smawk(r1, r2)
 		x := minima[r-1+offset]
