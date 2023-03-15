@@ -11,6 +11,9 @@ import "strings"
 func Wrap(text string, width, maxwidth int) string {
 	words := strings.Fields(text)
 	count := len(words)
+	if count == 0 {
+		return ""
+	}
 	offsets := make([]int, count+1)
 	for i, w := range words {
 		offsets[i+1] = offsets[i] + len(w)
@@ -117,47 +120,71 @@ func Wrap(text string, width, maxwidth int) string {
 		}
 	}
 
-	var lines []string
-	j := count
-	for j > 0 {
-		i = breaks[j]
-		lines = append(lines, strings.Join(words[i:j], " "))
-		j = i
+	// Work backwards finding line breaks.
+	for x, j := 0, count; ; x++ {
+		breaks[count-x], j = j, breaks[j]
+		if j <= 0 {
+			breaks = breaks[count-x:]
+			break
+		}
 	}
 
-	// reverse lines
-	for i, j := 0, len(lines)-1; i < j; i, j = i+1, j-1 {
-		lines[i], lines[j] = lines[j], lines[i]
+	// Work forwards writing lines.
+	var b strings.Builder
+	b.Grow(offsets[count] + count - 1)
+	i = 0
+	for _, j := range breaks {
+		appendLine(&b, words[i:j])
+		i = j
 	}
-
-	return strings.Join(lines, "\n")
+	return b.String()
 }
 
 // Greedy formats text at the given width greedily.
 func Greedy(text string, width, maxwidth int) string {
-	words := strings.Fields(text)
-
-	var lines []string
-	var prev int
-	var total int
-	for i, w := range words {
-		d := total + 1 + len(w)
-
-		// if adding w pushes us over our maxwidth
-		// OR
-		// d is further from our goal than total is,
-		// then we're done this block
-		if d > maxwidth || abs(width-d) > abs(width-total) {
-			lines = append(lines, strings.Join(words[prev:i], " "))
-			prev = i
-			total = -1
-		}
-
-		total += len(w) + 1
+	fields := strings.Fields(text)
+	count := len(fields)
+	if count == 0 {
+		return ""
 	}
-	lines = append(lines, strings.Join(words[prev:], " "))
 
-	return strings.Join(lines, "\n")
+	var b strings.Builder
+	b.Grow(len(text))
+
+	i := 0
+	lineWidth := len(fields[i])
+	for k := 1; k < count; k++ {
+		fieldWidth := len(fields[k])
+		nextWidth := lineWidth + 1 + fieldWidth
+
+		switch {
+		// Append the existing line if adding the field will go
+		// over the max width OR farther from the target width.
+		case nextWidth > maxwidth || abs(width-lineWidth) < abs(width-nextWidth):
+			appendLine(&b, fields[i:k])
+			i = k
+			lineWidth = fieldWidth
+		default:
+			lineWidth = nextWidth
+		}
+	}
+	appendLine(&b, fields[i:])
+
+	return b.String()
+}
+
+func appendLine(b *strings.Builder, fields []string) {
+	if len(fields) == 0 {
+		return
+	}
+	if b.Len() > 0 {
+		b.WriteRune('\n')
+	}
+	b.WriteString(fields[0])
+	for _, field := range fields[1:] {
+		b.WriteRune(' ')
+		b.WriteString(field)
+	}
 }
 
 // trivial int stack
